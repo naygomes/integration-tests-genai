@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  title: Pedidos API (cenário de estudo)
+  version: 1.0.0
+paths:
+  /pedidos:
+    post:
+      summary: Cria pedido (reserva estoque e autoriza pagamento)
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PedidoRequest' }
+      responses:
+        '201': { description: Pedido criado, status CONFIRMADO }
+        '400': { description: Payload inválido }
+        '402': { description: Pagamento recusado }
+        '409': { description: Estoque insuficiente }
+        '422': { description: Regra de negócio violada }
+        '503': { description: Dependência indisponível }
+  /pedidos/{id}:
+    get:
+      summary: Consulta pedido
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Pedido }
+        '404': { description: Não encontrado }
+  /pedidos/{id}/cancelamento:
+    post:
+      summary: Cancela pedido (libera estoque e estorna pagamento)
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200': { description: Cancelado }
+        '404': { description: Não encontrado }
+        '409': { description: Pedido não cancelável }
+components:
+  schemas:
+    PedidoRequest:
+      type: object
+      required: [clienteId, itens, pagamento]
+      properties:
+        clienteId: { type: string, format: uuid }
+        itens:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            type: object
+            required: [sku, quantidade]
+            properties:
+              sku: { type: string, pattern: '^[A-Z]{3}-[0-9]{4}$' }
+              quantidade: { type: integer, minimum: 1, maximum: 10 }
+        pagamento:
+          type: object
+          required: [metodo, valor]
+          properties:
+            metodo: { type: string, enum: [CARTAO, PIX] }
+            valor: { type: number, minimum: 0.01, description: 'Deve ser igual ao total dos itens' }
+            tokenCartao: { type: string, description: 'Obrigatório se metodo=CARTAO' }
+    Pedido:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        status: { type: string, enum: [PENDENTE, CONFIRMADO, CANCELADO, FALHOU] }
+        total: { type: number }
+# Contratos internos:
+#   Estoque:    POST /reservas {sku, quantidade} -> 201 {reservaId} | 409 sem saldo
+#               DELETE /reservas/{reservaId} -> 204
+#   Pagamentos: POST /autorizacoes {valor, metodo, token} -> 201 {autorizacaoId} | 402 recusado
+#               POST /autorizacoes/{id}/estorno -> 200
+#   Timeout de chamadas internas: 3s. Pedidos faz 1 retry apenas em Estoque.

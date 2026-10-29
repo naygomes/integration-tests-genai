@@ -1,0 +1,192 @@
+[
+  {
+    "id": "PED-01",
+    "classe": "VALIDO",
+    "descricao": "1 item, quantidade 1, CARTAO",
+    "request": {
+      "clienteId": "11111111-1111-4111-8111-111111111111",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 1 }],
+      "pagamento": {
+        "metodo": "CARTAO",
+        "valor": 10.0,
+        "tokenCartao": "tok_teste_001"
+      }
+    },
+    "esperado": 201
+  },
+  {
+    "id": "PED-02",
+    "classe": "VALIDO",
+    "descricao": "PIX sem token",
+    "request": {
+      "clienteId": "11111111-1111-4111-8111-111111111111",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 3 }],
+      "pagamento": { "metodo": "PIX", "valor": 30.0 }
+    },
+    "esperado": 201
+  },
+  {
+    "id": "PED-03",
+    "classe": "LIMITE_VALIDO",
+    "descricao": "quantidade máxima (10)",
+    "request": {
+      "clienteId": "22222222-2222-4222-8222-222222222222",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 10 }],
+      "pagamento": { "metodo": "PIX", "valor": 100.0 }
+    },
+    "esperado": 201
+  },
+  {
+    "id": "PED-04",
+    "classe": "LIMITE_VALIDO",
+    "descricao": "20 itens distintos (máximo), quantidade 1 cada",
+    "request": {
+      "clienteId": "22222222-2222-4222-8222-222222222222",
+      "itens": [
+        { "sku": "ABC-0001", "quantidade": 1 },
+        { "sku": "ABC-0002", "quantidade": 1 },
+        { "sku": "ABC-0003", "quantidade": 1 },
+        { "sku": "ABC-0004", "quantidade": 1 },
+        { "sku": "ABC-0005", "quantidade": 1 },
+        { "sku": "ABC-0006", "quantidade": 1 },
+        { "sku": "ABC-0007", "quantidade": 1 },
+        { "sku": "ABC-0008", "quantidade": 1 },
+        { "sku": "ABC-0009", "quantidade": 1 },
+        { "sku": "ABC-0010", "quantidade": 1 },
+        { "sku": "ABC-0011", "quantidade": 1 },
+        { "sku": "ABC-0012", "quantidade": 1 },
+        { "sku": "ABC-0013", "quantidade": 1 },
+        { "sku": "ABC-0014", "quantidade": 1 },
+        { "sku": "ABC-0015", "quantidade": 1 },
+        { "sku": "ABC-0016", "quantidade": 1 },
+        { "sku": "ABC-0017", "quantidade": 1 },
+        { "sku": "ABC-0018", "quantidade": 1 },
+        { "sku": "ABC-0019", "quantidade": 1 },
+        { "sku": "ABC-0020", "quantidade": 1 }
+      ],
+      "pagamento": { "metodo": "PIX", "valor": 200.0 }
+    },
+    "esperado": 201
+  },
+  {
+    "id": "PED-05",
+    "classe": "INVALIDO",
+    "descricao": "quantidade 0 (abaixo do mínimo)",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 0 }],
+      "pagamento": { "metodo": "PIX", "valor": 0.01 }
+    },
+    "esperado": 400
+  },
+  {
+    "id": "PED-06",
+    "classe": "INVALIDO",
+    "descricao": "quantidade 11 (acima do máximo)",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 11 }],
+      "pagamento": { "metodo": "PIX", "valor": 110.0 }
+    },
+    "esperado": 400
+  },
+  {
+    "id": "PED-07",
+    "classe": "INVALIDO",
+    "descricao": "lista de itens vazia",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [],
+      "pagamento": { "metodo": "PIX", "valor": 10.0 }
+    },
+    "esperado": 400
+  },
+  {
+    "id": "PED-08",
+    "classe": "INVALIDO",
+    "descricao": "SKU fora do padrão",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [{ "sku": "abc-1", "quantidade": 1 }],
+      "pagamento": { "metodo": "PIX", "valor": 10.0 }
+    },
+    "esperado": 400
+  },
+  {
+    "id": "PED-09",
+    "classe": "INVALIDO",
+    "descricao": "método de pagamento fora do enum",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 1 }],
+      "pagamento": { "metodo": "BOLETO", "valor": 10.0 }
+    },
+    "esperado": 400
+  },
+  {
+    "id": "PED-10",
+    "classe": "INVALIDO",
+    "descricao": "CARTAO sem tokenCartao",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 1 }],
+      "pagamento": { "metodo": "CARTAO", "valor": 10.0 }
+    },
+    "esperado": 400
+  },
+  {
+    "id": "PED-11",
+    "classe": "INVALIDO",
+    "descricao": "valor diferente do total dos itens",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 2 }],
+      "pagamento": { "metodo": "PIX", "valor": 15.0 }
+    },
+    "esperado": 422
+  },
+  {
+    "id": "PED-12",
+    "classe": "INVALIDO",
+    "descricao": "valor abaixo do mínimo (0)",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [{ "sku": "ABC-0001", "quantidade": 1 }],
+      "pagamento": { "metodo": "PIX", "valor": 0 }
+    },
+    "esperado": 400
+  },
+  {
+    "id": "PED-13",
+    "classe": "INVALIDO",
+    "descricao": "21 itens (acima do máximo)",
+    "request": {
+      "clienteId": "33333333-3333-4333-8333-333333333333",
+      "itens": [
+        { "sku": "ABC-0001", "quantidade": 1 },
+        { "sku": "ABC-0002", "quantidade": 1 },
+        { "sku": "ABC-0003", "quantidade": 1 },
+        { "sku": "ABC-0004", "quantidade": 1 },
+        { "sku": "ABC-0005", "quantidade": 1 },
+        { "sku": "ABC-0006", "quantidade": 1 },
+        { "sku": "ABC-0007", "quantidade": 1 },
+        { "sku": "ABC-0008", "quantidade": 1 },
+        { "sku": "ABC-0009", "quantidade": 1 },
+        { "sku": "ABC-0010", "quantidade": 1 },
+        { "sku": "ABC-0011", "quantidade": 1 },
+        { "sku": "ABC-0012", "quantidade": 1 },
+        { "sku": "ABC-0013", "quantidade": 1 },
+        { "sku": "ABC-0014", "quantidade": 1 },
+        { "sku": "ABC-0015", "quantidade": 1 },
+        { "sku": "ABC-0016", "quantidade": 1 },
+        { "sku": "ABC-0017", "quantidade": 1 },
+        { "sku": "ABC-0018", "quantidade": 1 },
+        { "sku": "ABC-0019", "quantidade": 1 },
+        { "sku": "ABC-0020", "quantidade": 1 },
+        { "sku": "ABC-0021", "quantidade": 1 }
+      ],
+      "pagamento": { "metodo": "PIX", "valor": 210.0 }
+    },
+    "esperado": 400
+  }
+]
